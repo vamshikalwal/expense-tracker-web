@@ -320,29 +320,39 @@ export default function Transactions() {
               <SelectField
                 label="Payment type"
                 value={form.paymentType}
-                onChange={(v) => setForm({ ...form, paymentType: v })}
+                onChange={(v) =>
+                  setForm({
+                    ...form,
+                    paymentType: v,
+                    cardId: v === "CARD" ? form.cardId : "",
+                    bankId: v === "BANK" ? form.bankId : "",
+                  })
+                }
                 options={["CARD", "BANK"]}
               />
-              <SelectField
-                label="Card"
-                value={form.cardId}
-                onChange={(v) => setForm({ ...form, cardId: v })}
-                required={form.paymentType === "CARD"}
-                options={cards.map((card) => ({
-                  label: card.name,
-                  value: card.id,
-                }))}
-              />
-              <SelectField
-                label="Bank"
-                value={form.bankId}
-                onChange={(v) => setForm({ ...form, bankId: v })}
-                required={form.paymentType === "BANK"}
-                options={banks.map((bank) => ({
-                  label: bank.name,
-                  value: bank.id,
-                }))}
-              />
+              {form.paymentType === "CARD" ? (
+                <SelectField
+                  label="Card"
+                  value={form.cardId}
+                  onChange={(v) => setForm({ ...form, cardId: v, bankId: "" })}
+                  required
+                  options={cards.map((card) => ({
+                    label: card.name,
+                    value: card.id,
+                  }))}
+                />
+              ) : (
+                <SelectField
+                  label="Bank"
+                  value={form.bankId}
+                  onChange={(v) => setForm({ ...form, bankId: v, cardId: "" })}
+                  required
+                  options={banks.map((bank) => ({
+                    label: bank.name,
+                    value: bank.id,
+                  }))}
+                />
+              )}
             </div>
             <div className="modal-actions">
               <Button

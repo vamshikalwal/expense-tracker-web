@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import './styles.css'
 import './linked-transactions.css'
 import './profile.css'
+import './add-with-ai.css'
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 

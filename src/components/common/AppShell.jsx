@@ -14,12 +14,14 @@ import {
   Wallet,
   X,
   Landmark,
+  Sparkles,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 const navigation = [
   { label: "Overview", to: "/dashboard", icon: LayoutDashboard },
   { label: "Transactions", to: "/transactions", icon: Receipt },
+  { label: "Add with AI", to: "/add-with-ai", icon: Sparkles },
   { label: "Budgets", to: "/budgets", icon: Wallet },
   { label: "Reports", to: "/reports", icon: PieChart },
 ];
@@ -147,6 +149,7 @@ export default function AppShell({ children }) {
   const titles = {
     "/dashboard": ["Good morning", "Here is your financial overview."],
     "/transactions": ["Transactions", "Keep a clear view of every rupee."],
+    "/add-with-ai": ["Add with AI", "Turn a natural sentence into a transaction."],
     "/budgets": ["Budgets", "Give every category a purpose."],
     "/reports": ["Reports", "Patterns become clear over time."],
     "/banks": ["Banks", "Your connected financial institutions."],

@@ -4,6 +4,7 @@ import AppShell from '../components/common/AppShell'
 import { LoginPage, RegisterPage } from '../pages/AuthPages'
 import Dashboard from '../pages/Dashboard'
 import Transactions from '../pages/Transactions'
+import AddWithAI from '../pages/AddWithAI'
 import { BanksPage, CardsPage, BudgetsPage, ReportsPage, SettingsPage } from '../pages/FinancePages'
 
 function Protected() {
@@ -19,6 +20,7 @@ export default function AppRoutes() {
       <Route index element={<Navigate to="/dashboard" replace />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/transactions" element={<Transactions />} />
+      <Route path="/add-with-ai" element={<AddWithAI />} />
       <Route path="/banks" element={<BanksPage />} />
       <Route path="/cards" element={<CardsPage />} />
       <Route path="/budgets" element={<BudgetsPage />} />

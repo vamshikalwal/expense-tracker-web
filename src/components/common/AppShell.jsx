@@ -129,20 +129,30 @@ function Sidebar({ onClose }) {
 export default function AppShell({ children }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const accountRef = useRef(null);
+  const notificationRef = useRef(null);
   const location = useLocation();
   const { user, signOut } = useAuth();
   useEffect(() => {
     const closeAccountMenu = (event) => {
       if (!accountRef.current?.contains(event.target)) setAccountOpen(false);
     };
+    const closeNotificationMenu = (event) => {
+      if (!notificationRef.current?.contains(event.target)) setNotificationOpen(false);
+    };
     const closeOnEscape = (event) => {
-      if (event.key === "Escape") setAccountOpen(false);
+      if (event.key === "Escape") {
+        setAccountOpen(false);
+        setNotificationOpen(false);
+      }
     };
     document.addEventListener("mousedown", closeAccountMenu);
+    document.addEventListener("mousedown", closeNotificationMenu);
     document.addEventListener("keydown", closeOnEscape);
     return () => {
       document.removeEventListener("mousedown", closeAccountMenu);
+      document.removeEventListener("mousedown", closeNotificationMenu);
       document.removeEventListener("keydown", closeOnEscape);
     };
   }, []);
@@ -191,13 +201,37 @@ export default function AppShell({ children }) {
             <p>{subtitle}</p>
           </div>
           <div className="topbar-actions">
-            <button
-              className="icon-button notification"
-              aria-label="Notifications"
-            >
-              <Bell size={19} />
-              <i />
-            </button>
+            <div className="account-menu-wrap" ref={notificationRef}>
+              <button
+                className="icon-button notification"
+                aria-label="Notifications"
+                aria-expanded={notificationOpen}
+                onClick={() => setNotificationOpen((open) => !open)}
+              >
+                <Bell size={19} />
+                <i />
+              </button>
+              {notificationOpen && (
+                <div className="account-menu" style={{ right: 0, width: 260 }}>
+                  <div className="account-menu-user">
+                    <strong>Notifications</strong>
+                    <span>3 updates</span>
+                  </div>
+                  <div className="account-menu-link" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4, cursor: 'default' }}>
+                    <strong style={{ fontSize: 13 }}>Budget alert</strong>
+                    <span style={{ fontSize: 12, color: '#666' }}>Food budget is 85% used.</span>
+                  </div>
+                  <div className="account-menu-link" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4, cursor: 'default' }}>
+                    <strong style={{ fontSize: 13 }}>Card payment</strong>
+                    <span style={{ fontSize: 12, color: '#666' }}>Groceries transaction posted today.</span>
+                  </div>
+                  <div className="account-menu-link" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4, cursor: 'default' }}>
+                    <strong style={{ fontSize: 13 }}>Monthly summary</strong>
+                    <span style={{ fontSize: 12, color: '#666' }}>Your spend is down 8.4% from last month.</span>
+                  </div>
+                </div>
+              )}
+            </div>
             <div className="account-menu-wrap" ref={accountRef}>
               <button
                 className="account-trigger"

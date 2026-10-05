@@ -622,8 +622,21 @@ export function ReportsPage() {
   );
 }
 export function SettingsPage() {
-  const { user, signOut, updateProfilePhoto } = useAuth();
+  const { user, signOut, updateProfilePhoto, updateProfile, deleteAccount } = useAuth();
   const [photoError, setPhotoError] = useState("");
+  const [profileForm, setProfileForm] = useState({ name: "", email: "", currentPassword: "", newPassword: "" });
+  const [profileMessage, setProfileMessage] = useState({ type: "", text: "" });
+  const [deletePassword, setDeletePassword] = useState("");
+
+  useEffect(() => {
+    if (!user) return;
+    setProfileForm((current) => ({
+      ...current,
+      name: user.name || "",
+      email: user.email || "",
+    }));
+  }, [user]);
+
   const handlePhotoChange = (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -642,6 +655,37 @@ export function SettingsPage() {
     };
     reader.readAsDataURL(file);
   };
+
+  const handleProfileSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      await updateProfile({
+        name: profileForm.name.trim(),
+        email: profileForm.email.trim(),
+        currentPassword: profileForm.currentPassword.trim() || undefined,
+        newPassword: profileForm.newPassword.trim() || undefined,
+      });
+      setProfileMessage({ type: "success", text: "Profile updated successfully." });
+      setProfileForm((current) => ({ ...current, currentPassword: "", newPassword: "" }));
+    } catch (error) {
+      setProfileMessage({ type: "error", text: error?.response?.data?.message || error?.message || "Unable to update your profile." });
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!deletePassword.trim()) {
+      setProfileMessage({ type: "error", text: "Enter your password to confirm account deletion." });
+      return;
+    }
+    const confirmed = window.confirm("This will permanently delete your account and all linked financial data. Continue?");
+    if (!confirmed) return;
+    try {
+      await deleteAccount({ password: deletePassword });
+    } catch (error) {
+      setProfileMessage({ type: "error", text: error?.response?.data?.message || "Unable to delete your account." });
+    }
+  };
+
   return (
     <div className="settings-page">
       <div className="settings-card">
@@ -657,6 +701,36 @@ export function SettingsPage() {
           {photoError && <p className="photo-error">{photoError}</p>}
         </div>
       </div>
+
+      <form className="settings-list" onSubmit={handleProfileSubmit}>
+        <div className="settings-form-grid">
+          <label>
+            <span>Name</span>
+            <input value={profileForm.name} onChange={(event) => setProfileForm((current) => ({ ...current, name: event.target.value }))} placeholder="Full name" />
+          </label>
+          <label>
+            <span>Email</span>
+            <input type="email" value={profileForm.email} onChange={(event) => setProfileForm((current) => ({ ...current, email: event.target.value }))} placeholder="you@example.com" />
+          </label>
+          <label>
+            <span>Current password</span>
+            <input type="password" value={profileForm.currentPassword} onChange={(event) => setProfileForm((current) => ({ ...current, currentPassword: event.target.value }))} placeholder="Required for password change" />
+          </label>
+          <label>
+            <span>New password</span>
+            <input type="password" value={profileForm.newPassword} onChange={(event) => setProfileForm((current) => ({ ...current, newPassword: event.target.value }))} placeholder="Leave empty to keep current password" />
+          </label>
+        </div>
+
+        {profileMessage.text && (
+          <p className={profileMessage.type === "success" ? "muted success-message" : "photo-error"}>{profileMessage.text}</p>
+        )}
+
+        <div className="settings-actions">
+          <button type="submit" className="primary-button">Save changes</button>
+        </div>
+      </form>
+
       <div className="settings-list">
         <div>
           <div>
@@ -672,13 +746,21 @@ export function SettingsPage() {
           </div>
           <ArrowUpRight size={16} />
         </div>
-        <button className="danger-row" onClick={signOut}>
+        <button className="danger-row" type="button" onClick={signOut}>
           <div>
             <strong>Sign out</strong>
             <span>End this session</span>
           </div>
           <ArrowUpRight size={16} />
         </button>
+        <div className="danger-zone">
+          <strong>Delete account</strong>
+          <span>Permanent action. Confirm with your password.</span>
+          <div className="danger-delete-row">
+            <input type="password" value={deletePassword} onChange={(event) => setDeletePassword(event.target.value)} placeholder="Enter password" />
+            <button type="button" className="danger-button" onClick={handleDeleteAccount}>Delete account</button>
+          </div>
+        </div>
       </div>
     </div>
   );
